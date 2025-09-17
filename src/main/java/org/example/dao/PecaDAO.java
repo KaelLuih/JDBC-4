@@ -65,6 +65,36 @@ return false;
         }
         return pecas;
     }
+    public double buscarEstoquePorId(int id){
+        String query = "SELECT estoque FROM Peca WHERE id = ?";
+        double quantidade = 0;
+        try(Connection conn = Conexao.conectar();
+            PreparedStatement stmt = conn.prepareStatement(query)){
+            stmt.setInt(1,id);
+
+            ResultSet rs = stmt.executeQuery();
+
+            if(rs.next()){
+                quantidade = rs.getDouble("estoque");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return quantidade;
+    }
+    public static void Atualizar(double quantidade, Double id){
+        String query = "UPDATE Peca" +
+                "SET estoque = estoque - ?" +
+                "where id =? ";
+        try(Connection conn = Conexao.conectar();
+            PreparedStatement stmt = conn.prepareStatement(query)){
+        stmt.setDouble(1,quantidade);
+        stmt.setInt(2,id);
+        stmt.executeUpdate();
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+    }
 
 
 }

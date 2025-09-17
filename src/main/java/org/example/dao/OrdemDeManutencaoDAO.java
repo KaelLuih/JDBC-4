@@ -61,6 +61,21 @@ public class OrdemDeManutencaoDAO {
         }
         return ordens;
     }
+    public static void AtualizarStatus(int idOrdem) {
+        String query = """
+                UPDATE OrdemManutencao
+                SET status = 'EXECUTADO'
+                WHERE id = ?
+                """;
+        try (Connection conn = Conexao.conectar();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, idOrdem);
+            stmt.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
 
 }

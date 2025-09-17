@@ -81,13 +81,13 @@ public class MaquinaDAO {
         return maquinas;
     }
 
-    public void atualizarStatus(Maquina maquina) throws SQLException {
+    public void atualizarStatus(int id , String status) throws SQLException {
         String query = "UPDATE Maquina SET status = ? WHERE id = ?";
         try(Connection conn = Conexao.conectar();
         PreparedStatement stmt = conn.prepareStatement(query)){
-            maquina.setStatus("EM_MANUTENCAO");
-            stmt.setString(1, maquina.getStatus());
-            stmt.setInt(2,maquina.getId());
+
+            stmt.setString(1, status);
+            stmt.setInt(2,id);
             stmt.executeUpdate();
 
         }catch (SQLException e){

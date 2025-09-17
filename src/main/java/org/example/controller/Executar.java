@@ -30,7 +30,15 @@ public class Executar {
                     break;
                 }
                 case 5:{
-
+                    Gerenciamento.AssociarPeca();
+                    break;
+                }
+                case 6:{
+                    Gerenciamento.RealizarManutencao();
+                    break;
+                }
+                case 0:{
+                    break;
                 }
             }
         }

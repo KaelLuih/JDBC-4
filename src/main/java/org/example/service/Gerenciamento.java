@@ -6,9 +6,7 @@ import org.example.view.Menu;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class Gerenciamento {
     static Scanner input = new Scanner(System.in);
@@ -147,7 +145,7 @@ public class Gerenciamento {
                 "PENDENTE"
         );
         ordemDAO.CadastrarOrdemDeManutencao(ordem);
-        maquinaDAO.atualizarStatus(maquinaSelecionada);
+        maquinaDAO.atualizarStatus(maquinaSelecionada.getId(), maquinaSelecionada.getStatus());
 
         Menu.mensagemSucesso();
     }
@@ -234,7 +232,60 @@ public class Gerenciamento {
         }
     }
     public static void RealizarManutencao()throws SQLException{
+        var ordemDAO = new OrdemDeManutencaoDAO();
+        List<Integer> opcoes = new ArrayList<>();
+        List<OrdemDeManutencao> ordens = ordemDAO.listarOrdensManutencaoPendente();
+        for (OrdemDeManutencao ordem : ordens) {
+            System.out.println("\n----ORDEM----\n");
+            System.out.println("id ordem:" + ordem.getId());
+            System.out.println("id Maquina:" + ordem.getIdMaquina());
+            System.out.println("id Tecnico:" + ordem.getIdTecnico());
+            System.out.println("DATA solicitação:" + ordem.getDataSolicitacao());
+            System.out.println("STATUS:" + ordem.getStatus());
 
+            opcoes.add(ordem.getId());
+
+        }
+        System.out.println("Digite o id da ordem que deseja ");
+        int idOrdem = input.nextInt();
+        input.nextLine();
+
+        Map<Integer,Double> atualizacoes = new HashMap<>();
+
+        var pecaDAO = new PecaDAO();
+        var ordemProducaoDAO = new OrdemPecaDAO();
+
+
+          if(opcoes.contains(idOrdem)){
+            List<OrdemPeca> ordensDePeca= ordemProducaoDAO.BuscarOrdemPoridOrdemManu(idOrdem);
+            for(OrdemPeca ordemPeca : ordensDePeca){
+                double estoque = pecaDAO.buscarEstoquePorId(ordemPeca.getIdPeca());
+                if(estoque>=ordemPeca.getQuantidade()){
+                    atualizacoes.put(ordemPeca.getIdOrdem(),estoque-ordemPeca.getQuantidade());
+
+                }else{
+                    System.out.println("Estoque nao tem capacidade");
+                    RealizarManutencao();
+                }
+
+                for (Map.Entry<Integer,Double> entrada : atualizacoes.entrySet()){
+                    pecaDAO.Atualizar(entrada.getKey(), entrada.getValue());
+                }
+                ordemDAO.AtualizarStatus(idOrdem);
+                var maquinaDAO = new MaquinaDAO();
+
+                int idMaquina = 0;
+                for(OrdemDeManutencao ordemDeManutencao: ordens){
+                    if(ordemDeManutencao.getId()==idOrdem){
+                        idMaquina = ordemDeManutencao.getIdMaquina();
+                    }
+                }
+                maquinaDAO.atualizarStatus(idMaquina,"OPERACIONAL");
+            }
+        }else {
+              System.out.println("id Invalido");
+                RealizarManutencao();
+          }
     }
 
 
