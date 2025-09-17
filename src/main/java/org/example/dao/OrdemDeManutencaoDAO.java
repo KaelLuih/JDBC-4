@@ -5,7 +5,11 @@ import org.example.util.Conexao;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 public class OrdemDeManutencaoDAO {
 
@@ -26,6 +30,36 @@ public class OrdemDeManutencaoDAO {
         }catch (SQLException e){
             e.printStackTrace();
         }
+    }
+    public List<OrdemDeManutencao> listarOrdensManutencaoPendente(){
+        List<OrdemDeManutencao> ordens = new ArrayList<>();
+        String query = """
+                    SELECT id
+                    	, idMaquina
+                    	, idTecnico
+                    	, dataSolicitacao
+                        , status
+                    FROM OrdemManutencao
+                    WHERE status = 'PENDENTE'
+                """;
+        try(Connection conn = Conexao.conectar();
+            PreparedStatement stmt = conn.prepareStatement(query)){
+            ResultSet rs = stmt.executeQuery();
+
+            while(rs.next()){
+                int id = rs.getInt("id");
+                int idMaquina = rs.getInt("idMaquina");
+                int idTecnico = rs.getInt("idTecnico");
+                Date dataSolicitacao = rs.getDate("dataSolicitacao");
+                String status = rs.getString("status");
+
+                var ordem = new OrdemDeManutencao(id, idMaquina,idTecnico, ((java.sql.Date) dataSolicitacao).toLocalDate(),status);
+                ordens.add(ordem);
+            }
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+        return ordens;
     }
 
 

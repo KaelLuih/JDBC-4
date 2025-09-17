@@ -81,7 +81,7 @@ public class MaquinaDAO {
         return maquinas;
     }
 
-    public void AualizarStatus(Maquina maquina) throws SQLException {
+    public void atualizarStatus(Maquina maquina) throws SQLException {
         String query = "UPDATE Maquina SET status = ? WHERE id = ?";
         try(Connection conn = Conexao.conectar();
         PreparedStatement stmt = conn.prepareStatement(query)){
@@ -96,6 +96,7 @@ public class MaquinaDAO {
 
 
     }
+
 
 
 }

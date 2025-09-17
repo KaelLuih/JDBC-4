@@ -25,6 +25,13 @@ public class Executar {
                     Gerenciamento.CadastrarPEca();
                     break;
                 }
+                case 4:{
+                    Gerenciamento.CadastrarOrdem();
+                    break;
+                }
+                case 5:{
+
+                }
             }
         }
     }
